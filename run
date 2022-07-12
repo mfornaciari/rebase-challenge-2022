@@ -1,0 +1,9 @@
+#!/bin/bash
+
+docker run \
+  --rm \
+  -w /app \
+  -v $(pwd):/app \
+  -p 3000:3000 \
+  ruby \
+  bash -c "gem install rack sinatra puma && ruby server.rb"
