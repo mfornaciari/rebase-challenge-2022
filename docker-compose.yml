@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  server:
+    image: ruby
+    command: bash -c "gem install rack sinatra puma && ruby server.rb"
+    ports:
+      - 3000:3000
+    working_dir: /app
+    volumes:
+      - ./:/app
