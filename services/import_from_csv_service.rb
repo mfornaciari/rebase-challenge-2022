@@ -1,4 +1,5 @@
 require 'csv'
+require 'pg'
 
 class ImportFromCsvService
 

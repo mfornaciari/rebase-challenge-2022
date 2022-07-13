@@ -1,5 +1,4 @@
 require 'test/unit'
-require 'pg'
 require './services/import_from_csv_service'
 
 class TestImportFromCsv < Test::Unit::TestCase
