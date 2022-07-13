@@ -1,7 +1,7 @@
 require 'csv'
 
-def import_from_csv(file_path)
-  connection = PG.connect dbname: 'medical_records', host: 'database', user: 'user', password: 'password'
+def import_from_csv(file_path, database)
+  connection = PG.connect dbname: 'medical_records', host: database, user: 'user', password: 'password'
   connection.exec "DROP TABLE IF EXISTS exams"
   connection.exec(
     %q{
