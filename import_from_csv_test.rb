@@ -4,8 +4,7 @@ require './import_from_csv'
 
 class TestImportFromCsv < Test::Unit::TestCase
   def test_import_from_csv
-    data_from_csv = []
-    CSV.foreach('./test_data.csv', headers: true, col_sep: ';') { |row| data_from_csv << row.fields }
+    data_from_csv = CSV.read('./test_data.csv', headers: true, col_sep: ';').map(&:fields)
     connection = PG.connect dbname: 'medical_records', host: 'database', user: 'user', password: 'password'
 
     import_from_csv('./test_data.csv')
