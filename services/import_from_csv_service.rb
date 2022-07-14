@@ -22,22 +22,22 @@ class ImportFromCsvService
     connection.exec(
       %q{
         CREATE TABLE exams (
-          cpf VARCHAR(14),
-          nome_paciente VARCHAR(100),
-          email_paciente VARCHAR(100),
-          data_nascimento_paciente DATE,
-          endereço_rua_paciente VARCHAR(100),
-          cidade_paciente VARCHAR(50),
-          estado_paciente VARCHAR(50),
-          crm_médico VARCHAR(10),
-          crm_médico_estado VARCHAR(50),
-          nome_médico VARCHAR(100),
-          email_médico VARCHAR(100),
-          token_resultado_exame VARCHAR(10),
-          data_exame DATE,
-          tipo_exame VARCHAR(50),
-          limites_tipo_exame VARCHAR(10),
-          resultado_tipo_exame INTEGER
+          "cpf" VARCHAR(14),
+          "nome paciente" VARCHAR(100),
+          "email paciente" VARCHAR(100),
+          "data nascimento paciente" DATE,
+          "endereço/rua paciente" VARCHAR(100),
+          "cidade paciente" VARCHAR(50),
+          "estado patiente" VARCHAR(50),
+          "crm médico" VARCHAR(10),
+          "crm médico estado" VARCHAR(50),
+          "nome médico" VARCHAR(100),
+          "email médico" VARCHAR(100),
+          "token resultado exame" VARCHAR(10),
+          "data exame" DATE,
+          "tipo exame" VARCHAR(50),
+          "limites tipo exame" VARCHAR(10),
+          "resultado tipo exame" INTEGER
         )
       }
     )
