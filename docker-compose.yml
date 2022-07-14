@@ -9,9 +9,12 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
+      - gems:/usr/local/bundle/gems
 
   db:
     image: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -23,3 +26,7 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: medical_records
+
+volumes:
+  db-data:
+  gems:

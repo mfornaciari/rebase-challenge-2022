@@ -3,13 +3,13 @@ require 'pg'
 
 class CsvService
 
-  def initialize(file_path, database)
+  def initialize(file_path)
     @file_path = file_path
-    @database = database
+    @db = ENV['APP_ENV'] == 'test' ? 'test-db' : 'db'
   end
 
   def import
-    connection = PG.connect dbname: 'medical_records', host: @database, user: 'user', password: 'password'
+    connection = PG.connect dbname: 'medical_records', host: @db, user: 'user', password: 'password'
     create_table(connection)
     insert_csv_data(connection)
     connection.close
