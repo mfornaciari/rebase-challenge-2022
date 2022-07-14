@@ -3,5 +3,5 @@ version: "3.8"
 services:
   app:
     command: bash -c "gem install rack sinatra puma pg && ruby server.rb"
-    env_file:
-      - test.env
+    environment:
+      APP_ENV: test
