@@ -1,3 +1,3 @@
 require './services/csv_service'
 
-CsvService.new('./data.csv', 'db').import
+CsvService.new('./data.csv').import
