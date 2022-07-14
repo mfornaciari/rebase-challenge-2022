@@ -1,14 +1,14 @@
 require 'csv'
 require 'pg'
 
-class ImportFromCsvService
+class CsvService
 
   def initialize(file_path, database)
     @file_path = file_path
     @database = database
   end
 
-  def import_from_csv
+  def import
     connection = PG.connect dbname: 'medical_records', host: @database, user: 'user', password: 'password'
     create_table(connection)
     insert_csv_data(connection)
