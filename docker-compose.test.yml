@@ -2,6 +2,6 @@ version: "3.8"
 
 services:
   app:
-    command: bash -c "gem install rack sinatra puma pg && ruby server.rb"
+    command: bash -c "bundle install && ruby server.rb"
     environment:
       APP_ENV: test
