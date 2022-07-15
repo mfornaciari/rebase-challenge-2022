@@ -3,13 +3,13 @@ version: "3.8"
 services:
   app:
     image: ruby
-    command: bash -c "gem install rack sinatra puma pg && ruby import_from_csv.rb && ruby server.rb"
+    command: bash -c "bundle install && ruby import_from_csv.rb && ruby server.rb"
     ports:
       - 3000:3000
     working_dir: /app
     volumes:
       - ./:/app
-      - gems:/usr/local/bundle/gems
+      - bundle-cache:/usr/local/bundle
 
   db:
     image: postgres
@@ -29,4 +29,4 @@ services:
 
 volumes:
   db-data:
-  gems:
+  bundle-cache:
