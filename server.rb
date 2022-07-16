@@ -17,7 +17,7 @@ end
 post '/import' do
   import_service = ImportService.new
   import_service.create_table
-  import_service.insert_data request.body.read
+  import_service.insert request.body.read
   [201, 'Dados importados com sucesso.']
 rescue PG::ProtocolViolation
   [422, 'Formato dos dados incorreto.']
