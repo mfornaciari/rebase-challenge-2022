@@ -11,10 +11,10 @@ class TestQuery < Test::Unit::TestCase
 
   def test_get_tests_success
     require './services/import_service'
-    import_service = ImportService.new(File.read('./tests/support/test_data.csv'))
+    import_service = ImportService.new
     import_service.create_table
-    import_service.insert_data
-    expected_result = JSON.parse(File.read('./tests/support/test_response.json'))
+    import_service.insert File.read('./tests/support/test_data.csv')
+    expected_result = JSON.parse(File.read('./tests/support/test_db_data.json'))
 
     result = QueryService.new.get_tests
 

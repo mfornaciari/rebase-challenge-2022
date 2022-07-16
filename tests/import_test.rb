@@ -13,7 +13,7 @@ class TestImport < Test::Unit::TestCase
     connection = PG.connect dbname: 'medical_records', host: 'test-db', user: 'user', password: 'password'
     columns = CSV.read('./tests/support/test_data.csv', headers: true, col_sep: ';').headers
 
-    ImportService.new(File.read('./tests/support/test_data.csv')).create_table
+    ImportService.new.create_table
     db_columns = connection.exec(
       "SELECT column_name FROM information_schema.columns WHERE table_name = 'exams'"
     ).values.flatten
@@ -25,30 +25,49 @@ class TestImport < Test::Unit::TestCase
   def test_create_table_already_exists
     connection = PG.connect dbname: 'medical_records', host: 'test-db', user: 'user', password: 'password'
     columns = CSV.read('./tests/support/test_data.csv', headers: true, col_sep: ';').headers
-    import_service = ImportService.new(File.read('./tests/support/test_data.csv'))
+    import_service = ImportService.new
     import_service.create_table
 
     import_service.create_table
-
     db_columns = connection.exec(
       "SELECT column_name FROM information_schema.columns WHERE table_name = 'exams'"
     ).values.flatten
+    connection.close
+
     db_columns.each { |column| assert_include columns, column }
   end
 
   def test_insert_data_success
-    connection = PG.connect dbname: 'medical_records', host: 'test-db', user: 'user', password: 'password'
-    csv_data = CSV.read('./tests/support/test_data.csv', headers:true, col_sep: ';').map(&:fields)
-    import_service = ImportService.new(File.read('./tests/support/test_data.csv'))
+    require './services/query_service'
+    expected_db_data = JSON.parse(File.read('./tests/support/test_db_data.json'))
+    import_service = ImportService.new
     import_service.create_table
 
-    import_service.insert_data
+    import_service.insert File.read('./tests/support/test_data.csv')
 
-    db_data = connection.exec('SELECT * FROM exams').values
-    assert_equal csv_data, db_data
+    assert_equal expected_db_data, JSON.parse(QueryService.new.get_tests)
+  end
+
+  def test_insert_data_multiple_times
+    require './services/query_service'
+    import_service = ImportService.new
+    import_service.create_table
+    expected_db_data = JSON.parse(File.read('./tests/support/test_multiple_insert_db_data.json'))
+
+    import_service.insert File.read('./tests/support/test_multiple_insert_data1.csv')
+    import_service.insert File.read('./tests/support/test_multiple_insert_data2.csv')
+
+    assert_equal expected_db_data, JSON.parse(QueryService.new.get_tests)
   end
 
   def test_insert_data_no_table
-    assert_raise(PG::UndefinedTable) { ImportService.new(File.read('./tests/support/test_data.csv')).insert_data }
+    assert_raise(PG::UndefinedTable) { ImportService.new.insert File.read('./tests/support/test_data.csv') }
+  end
+
+  def test_insert_data_invalid
+    import_service = ImportService.new
+    import_service.create_table
+
+    assert_raise(PG::ProtocolViolation) { import_service.insert File.read('./tests/support/test_invalid_data.csv') }
   end
 end

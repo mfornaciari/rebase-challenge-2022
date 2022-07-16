@@ -11,14 +11,16 @@ get '/tests' do
   end
 
   content_type :text
-  'Não há exames registrados'
+  'Não há exames registrados.'
 end
 
 post '/import' do
-  import_service = ImportService.new(request.body.read)
+  import_service = ImportService.new
   import_service.create_table
-  import_service.insert_data
+  import_service.insert_data request.body.read
   [201, 'Dados importados com sucesso.']
+rescue PG::ProtocolViolation
+  [422, 'Formato dos dados incorreto.']
 end
 
 Rack::Handler::Puma.run(
