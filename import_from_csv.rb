@@ -1,5 +1,6 @@
 require './services/import_service'
 
-import_service = ImportService.new(File.read('./data.csv'))
+import_service = ImportService.new
+import_service.drop_table
 import_service.create_table
-import_service.insert_data
+import_service.insert File.read('./data.csv')

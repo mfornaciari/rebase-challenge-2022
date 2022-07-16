@@ -9,10 +9,9 @@ class ImportService
   end
 
   def create_table
-    @connection.exec "DROP TABLE IF EXISTS exams"
     @connection.exec(
       %q{
-        CREATE TABLE exams (
+        CREATE TABLE IF NOT EXISTS exams (
           "cpf" VARCHAR(14),
           "nome paciente" VARCHAR(100),
           "email paciente" VARCHAR(100),
@@ -32,6 +31,10 @@ class ImportService
         )
       }
     )
+  end
+
+  def drop_table
+    @connection.exec('DROP TABLE IF EXISTS exams')
   end
 
   def insert(data)

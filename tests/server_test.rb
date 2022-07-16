@@ -45,6 +45,21 @@ class TestServer < Test::Unit::TestCase
     assert_equal expected_db_data, JSON.parse(QueryService.new.get_tests)
   end
 
+  def test_post_import_multiple_times
+    require './services/query_service'
+    http = Net::HTTP.new('localhost', 3000)
+    request1 = Net::HTTP::Post.new('/import', 'Content-Type': 'text/csv')
+    request1.body = File.read('./tests/support/test_multiple_insert_data1.csv')
+    request2 = Net::HTTP::Post.new('/import', 'Content-Type': 'text/csv')
+    request2.body = File.read('./tests/support/test_multiple_insert_data2.csv')
+    expected_db_data = JSON.parse(File.read('./tests/support/test_multiple_insert_db_data.json'))
+
+    http.request(request1)
+    http.request(request2)
+
+    assert_equal expected_db_data, JSON.parse(QueryService.new.get_tests)
+  end
+
   def test_post_import_invalid_data
     http = Net::HTTP.new('localhost', 3000)
     request = Net::HTTP::Post.new('/import', 'Content-Type': 'text/csv')

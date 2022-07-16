@@ -37,6 +37,20 @@ class TestImport < Test::Unit::TestCase
     db_columns.each { |column| assert_include columns, column }
   end
 
+  def test_drop_table_success
+    connection = PG.connect dbname: 'medical_records', host: 'test-db', user: 'user', password: 'password'
+    import_service = ImportService.new
+    import_service.create_table
+
+    import_service.drop_table
+    table_exists = connection.exec(
+      "SELECT EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'exams')"
+    ).getvalue(0, 0)
+    connection.close
+
+    assert_equal 'f', table_exists
+  end
+
   def test_insert_data_success
     require './services/query_service'
     expected_db_data = JSON.parse(File.read('./tests/support/test_db_data.json'))
