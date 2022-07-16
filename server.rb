@@ -1,18 +1,26 @@
 require 'sinatra'
 require 'rack/handler/puma'
-require 'pg'
-
-before do
-end
+require './services/import_service'
+require './services/query_service'
 
 get '/tests' do
-  content_type :json
+  content = QueryService.new.get_tests
+  if content
+    content_type :json
+    return content
+  end
 
-  db = ENV['APP_ENV'] == 'test' ? 'test-db' : 'db'
-  connection = PG.connect dbname: 'medical_records', host: db, user: 'user', password: 'password'
+  content_type :text
+  'Não há exames registrados.'
+end
 
-  result = connection.exec('SELECT * FROM "exams"')
-  result.map { |tuple| tuple }.to_json
+post '/import' do
+  import_service = ImportService.new
+  import_service.create_table
+  import_service.insert request.body.read
+  [201, 'Dados importados com sucesso.']
+rescue PG::ProtocolViolation
+  [422, 'Formato dos dados incorreto.']
 end
 
 Rack::Handler::Puma.run(
