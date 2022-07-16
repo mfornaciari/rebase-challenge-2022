@@ -14,8 +14,8 @@ class TestServer < Test::Unit::TestCase
 
     response = Net::HTTP.get_response 'localhost', '/tests', 3000
 
-    assert_equal response.code, '200'
-    assert_equal response['Content-Type'], 'application/json'
-    assert_equal JSON.parse(response.body), expected_response
+    assert_equal '200', response.code
+    assert_equal 'application/json', response['Content-Type']
+    assert_equal expected_response, JSON.parse(response.body)
   end
 end
