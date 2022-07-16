@@ -1,8 +1,6 @@
 require 'sinatra'
 require 'rack/handler/puma'
-require 'pg'
-require 'csv'
-require './services/csv_service'
+require './services/import_service'
 require './services/query_service'
 
 get '/tests' do
@@ -17,17 +15,9 @@ get '/tests' do
 end
 
 post '/import' do
-  db = ENV['APP_ENV'] == 'test' ? 'test-db' : 'db'
-  connection = PG.connect dbname: 'medical_records', host: db, user: 'user', password: 'password'
-
-  csv = CSV.new(request.body.read, headers: true, col_sep: ';')
-  csv.each do |row|
-    connection.exec_params(
-      %q{INSERT INTO exams VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)},
-      row.fields
-    )
-  end
-
+  import_service = ImportService.new(request.body.read)
+  import_service.create_table
+  import_service.insert_data
   [201, 'Dados importados com sucesso.']
 end
 

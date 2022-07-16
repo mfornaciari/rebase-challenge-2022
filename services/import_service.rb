@@ -1,25 +1,17 @@
 require 'csv'
 require 'pg'
 
-class CsvService
+class ImportService
 
-  def initialize(file_path)
-    @file_path = file_path
+  def initialize(data)
     @db = ENV['APP_ENV'] == 'test' ? 'test-db' : 'db'
+    @csv = CSV.new(data, headers: true, col_sep: ';')
+    @connection = PG.connect dbname: 'medical_records', host: @db, user: 'user', password: 'password'
   end
 
-  def import
-    connection = PG.connect dbname: 'medical_records', host: @db, user: 'user', password: 'password'
-    create_table(connection)
-    insert_csv_data(connection)
-    connection.close
-  end
-
-  private
-
-  def create_table(connection)
-    connection.exec "DROP TABLE IF EXISTS exams"
-    connection.exec(
+  def create_table
+    @connection.exec "DROP TABLE IF EXISTS exams"
+    @connection.exec(
       %q{
         CREATE TABLE exams (
           "cpf" VARCHAR(14),
@@ -43,9 +35,9 @@ class CsvService
     )
   end
 
-  def insert_csv_data(connection)
-    CSV.foreach(@file_path, headers: true, col_sep: ';') do |row|
-      connection.exec_params(
+  def insert_data
+    @csv.each do |row|
+      @connection.exec_params(
         %q{INSERT INTO exams VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)},
         row.fields
       )

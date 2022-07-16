@@ -1,3 +1,5 @@
-require './services/csv_service'
+require './services/import_service'
 
-CsvService.new('./data.csv').import
+import_service = ImportService.new(File.read('./data.csv'))
+import_service.create_table
+import_service.insert_data
