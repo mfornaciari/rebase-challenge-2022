@@ -3,18 +3,17 @@ require 'rack/handler/puma'
 require 'pg'
 require 'csv'
 require './services/csv_service'
-
-before do
-end
+require './services/query_service'
 
 get '/tests' do
-  content_type :json
+  content = QueryService.new.get_tests
+  if content
+    content_type :json
+    return content
+  end
 
-  db = ENV['APP_ENV'] == 'test' ? 'test-db' : 'db'
-  connection = PG.connect dbname: 'medical_records', host: db, user: 'user', password: 'password'
-
-  result = connection.exec('SELECT * FROM "exams"')
-  result.map { |tuple| tuple }.to_json
+  content_type :text
+  'Não há exames registrados'
 end
 
 post '/import' do
