@@ -3,13 +3,28 @@ version: "3.8"
 services:
   app:
     image: ruby
-    command: bash -c "bundle install && ruby import_from_csv.rb && ruby server.rb"
+    command: bash -c "bundle install && ruby server.rb"
     ports:
       - 3000:3000
     working_dir: /app
     volumes:
-      - ./:/app
+      - ./app:/app
       - bundle-cache:/usr/local/bundle
+    environment:
+      APP_ENV: development
+      DB: db
+
+  tests:
+    image: ruby
+    command: bash -c "bundle install && ruby server.rb"
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./tests:/tests
+      - bundle-cache:/usr/local/bundle
+    environment:
+      APP_ENV: test
+      DB: test-db
 
   db:
     image: postgres

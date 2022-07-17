@@ -1,5 +1,5 @@
 require 'test/unit'
-require './services/query_service'
+require_relative '../app/services/query_service'
 
 class TestQuery < Test::Unit::TestCase
   def teardown
@@ -10,11 +10,11 @@ class TestQuery < Test::Unit::TestCase
   end
 
   def test_get_tests_success
-    require './services/import_service'
+    require_relative '../app/services/import_service'
     import_service = ImportService.new
     import_service.create_table
-    import_service.insert File.read('./tests/support/test_data.csv')
-    expected_result = JSON.parse(File.read('./tests/support/test_db_data.json'))
+    import_service.insert File.read("#{Dir.pwd}/support/test_data.csv")
+    expected_result = JSON.parse(File.read("#{Dir.pwd}/support/test_db_data.json"))
 
     result = QueryService.new.get_tests
 

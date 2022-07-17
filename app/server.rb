@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'rack/handler/puma'
-require './services/import_service'
-require './services/query_service'
+require_relative './services/import_service'
+require_relative './services/query_service'
 
 get '/tests' do
   content = QueryService.new.get_tests
