@@ -4,8 +4,7 @@ require 'pg'
 class ImportService
 
   def initialize
-    @db = ENV['APP_ENV'] == 'test' ? 'test-db' : 'db'
-    @connection = PG.connect dbname: 'medical_records', host: @db, user: 'user', password: 'password'
+    @connection = PG.connect dbname: 'medical_records', host: ENV['DB'], user: 'user', password: 'password'
   end
 
   def create_table

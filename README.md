@@ -2,35 +2,34 @@
 
 API em Ruby para listagem de exames médicos.
 
+A construção desta aplicação é objeto do [**Desafio Rebase 2022**](https://git.campuscode.com.br/core-team/rebase-challenge-2022).
+
+Acompanhe o desenvolvimento na [**página do _GitHub Projects_**](https://github.com/users/mfornaciari/projects/3).
+
 ## Tech Stack
 
-* Docker
-* Ruby
+* [Docker](https://www.docker.com/)
+* [Ruby](https://www.ruby-lang.org/en/)
 
 ## Executando o projeto
 
-1. Execute o seguinte comando no terminal:
+1. Garante que o Docker está instalado e operacional.
+2. Execute os contêineres Docker:
 
     ```text
-    docker compose up
+    docker compose up -d
     ```
 
-2. Espere alguns segundos para o servidor entrar no ar.
+3. Espere alguns segundos para o servidor entrar no ar.
+4. Acesse o [_endpoint_](#endpoints) desejado.
 
 ### Executando testes
 
-1. Execute o seguinte comando no terminal:
+Após colocar o servidor no ar, execute o seguinte comando no terminal:
 
-    ```text
-    docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
-    ```
-
-2. Espere alguns segundos para o servidor entrar no ar.
-3. Execute o seguinte comando no terminal:
-
-    ```text
-    docker exec -it rebase-challenge-2022-app-1 ruby run_tests.rb
-    ```
+```text
+docker exec rebase-challenge-2022-tests-1 bash -c "cd ../tests && ruby run_tests.rb"
+```
 
 ## Endpoints
 

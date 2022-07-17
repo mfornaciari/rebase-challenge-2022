@@ -1,5 +1,5 @@
 require 'test/unit'
-require './services/import_service'
+require_relative '../app/services/import_service'
 
 class TestImport < Test::Unit::TestCase
   def teardown
@@ -11,7 +11,7 @@ class TestImport < Test::Unit::TestCase
 
   def test_create_table_success
     connection = PG.connect dbname: 'medical_records', host: 'test-db', user: 'user', password: 'password'
-    columns = CSV.read('./tests/support/test_data.csv', headers: true, col_sep: ';').headers
+    columns = CSV.read("#{Dir.pwd}/support/test_data.csv", headers: true, col_sep: ';').headers
 
     ImportService.new.create_table
     db_columns = connection.exec(
@@ -24,7 +24,7 @@ class TestImport < Test::Unit::TestCase
 
   def test_create_table_already_exists
     connection = PG.connect dbname: 'medical_records', host: 'test-db', user: 'user', password: 'password'
-    columns = CSV.read('./tests/support/test_data.csv', headers: true, col_sep: ';').headers
+    columns = CSV.read("#{Dir.pwd}/support/test_data.csv", headers: true, col_sep: ';').headers
     import_service = ImportService.new
     import_service.create_table
 
@@ -52,36 +52,38 @@ class TestImport < Test::Unit::TestCase
   end
 
   def test_insert_data_success
-    require './services/query_service'
-    expected_db_data = JSON.parse(File.read('./tests/support/test_db_data.json'))
+    require_relative '../app/services/query_service'
+    expected_db_data = JSON.parse(File.read("#{Dir.pwd}/support/test_db_data.json"))
     import_service = ImportService.new
     import_service.create_table
 
-    import_service.insert File.read('./tests/support/test_data.csv')
+    import_service.insert File.read("#{Dir.pwd}/support/test_data.csv")
 
     assert_equal expected_db_data, JSON.parse(QueryService.new.get_tests)
   end
 
   def test_insert_data_multiple_times
-    require './services/query_service'
+    require_relative '../app/services/query_service'
     import_service = ImportService.new
     import_service.create_table
-    expected_db_data = JSON.parse(File.read('./tests/support/test_multiple_insert_db_data.json'))
+    expected_db_data = JSON.parse(File.read("#{Dir.pwd}/support/test_multiple_insert_db_data.json"))
 
-    import_service.insert File.read('./tests/support/test_multiple_insert_data1.csv')
-    import_service.insert File.read('./tests/support/test_multiple_insert_data2.csv')
+    import_service.insert File.read("#{Dir.pwd}/support/test_multiple_insert_data1.csv")
+    import_service.insert File.read("#{Dir.pwd}/support/test_multiple_insert_data2.csv")
 
     assert_equal expected_db_data, JSON.parse(QueryService.new.get_tests)
   end
 
   def test_insert_data_no_table
-    assert_raise(PG::UndefinedTable) { ImportService.new.insert File.read('./tests/support/test_data.csv') }
+    assert_raise(PG::UndefinedTable) { ImportService.new.insert File.read("#{Dir.pwd}/support/test_data.csv") }
   end
 
   def test_insert_data_invalid
     import_service = ImportService.new
     import_service.create_table
 
-    assert_raise(PG::ProtocolViolation) { import_service.insert File.read('./tests/support/test_invalid_data.csv') }
+    assert_raise(PG::ProtocolViolation) do
+      import_service.insert File.read("#{Dir.pwd}/support/test_invalid_data.csv")
+    end
   end
 end
