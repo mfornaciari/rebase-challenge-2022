@@ -15,10 +15,10 @@ get '/tests' do
 end
 
 post '/import' do
-  csv = CSV.parse(request.body.read, headers: true, col_sep: ';')
-  return [422, 'Formato dos dados incorreto.'] unless csv.headers.length == 16
+  csv = CSV.new(request.body.read, headers: true, col_sep: ';')
+  return [422, 'Formato dos dados incorreto.'] unless csv.first.to_a.length == 16
 
-  CSV.new(request.body.read, headers: true, col_sep: ';').each do |row|
+  csv.each do |row|
     ImportWorker.perform_async(row.fields, ENV['DB'])
   end
   [201, 'Dados importados com sucesso.']
