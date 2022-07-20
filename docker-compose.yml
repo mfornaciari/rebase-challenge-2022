@@ -24,9 +24,9 @@ services:
     depends_on:
       - redis
     volumes:
-      - ./app/sidekiq:/sidekiq
+      - ./app:/app
       - sidekiq-bundle-cache:/usr/local/bundle
-    working_dir: /sidekiq
+    working_dir: /app/sidekiq
     environment:
       REDIS_URL: redis://redis:6379
 

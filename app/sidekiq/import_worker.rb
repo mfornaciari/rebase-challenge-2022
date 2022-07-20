@@ -1,5 +1,4 @@
 require 'sidekiq'
-require 'pg'
 require_relative '../services/import_service'
 
 class ImportWorker
