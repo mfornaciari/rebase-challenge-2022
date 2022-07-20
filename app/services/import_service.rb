@@ -3,8 +3,8 @@ require 'pg'
 
 class ImportService
 
-  def initialize
-    @connection = PG.connect dbname: 'medical_records', host: ENV['DB'], user: 'user', password: 'password'
+  def initialize(db)
+    @connection = PG.connect dbname: 'medical_records', host: db, user: 'user', password: 'password'
   end
 
   def create_table
@@ -37,11 +37,9 @@ class ImportService
   end
 
   def insert(data)
-    CSV.new(data, headers: true, col_sep: ';').each do |row|
-      @connection.exec_params(
-        %q{INSERT INTO exams VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)},
-        row.fields
-      )
-    end
+    @connection.exec_params(
+      "INSERT INTO exams VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)",
+      data
+    )
   end
 end

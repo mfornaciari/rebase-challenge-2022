@@ -3,7 +3,10 @@ version: "3.8"
 services:
   app:
     image: ruby
-    command: bash -c "bundle install && ruby server.rb"
+    command: bash -c "bundle && ruby server.rb"
+    depends_on:
+      - db
+      - sidekiq
     ports:
       - 3000:3000
     working_dir: /app
@@ -13,10 +16,29 @@ services:
     environment:
       APP_ENV: development
       DB: db
+      REDIS_URL: redis://redis:6379
+
+  sidekiq:
+    image: ruby
+    command: bash -c "bundle && sidekiq -r './import_worker.rb'"
+    depends_on:
+      - redis
+    volumes:
+      - ./app:/app
+      - sidekiq-bundle-cache:/usr/local/bundle
+    working_dir: /app/sidekiq
+    environment:
+      REDIS_URL: redis://redis:6379
+
+  redis:
+    image: redis
 
   tests:
     image: ruby
-    command: bash -c "bundle install && ruby server.rb"
+    command: bash -c "bundle && ruby server.rb"
+    depends_on:
+      - test-db
+      - sidekiq
     working_dir: /app
     volumes:
       - ./app:/app
@@ -25,6 +47,7 @@ services:
     environment:
       APP_ENV: test
       DB: test-db
+      REDIS_URL: redis://redis:6379
 
   db:
     image: postgres
@@ -48,3 +71,4 @@ volumes:
   db-data:
   test-db-data:
   bundle-cache:
+  sidekiq-bundle-cache:

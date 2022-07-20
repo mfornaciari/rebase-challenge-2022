@@ -1,6 +1,5 @@
-require_relative './services/import_service'
+require './sidekiq/import_worker'
 
-import_service = ImportService.new
-import_service.drop_table
-import_service.create_table
-import_service.insert File.read("#{Dir.pwd}/data.csv")
+CSV.foreach("#{Dir.pwd}/data.csv", headers: true, col_sep: ';') do |row|
+  ImportWorker.perform_async(row.fields, 'db')
+end
