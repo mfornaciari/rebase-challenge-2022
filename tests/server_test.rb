@@ -1,4 +1,5 @@
 require 'test/unit'
+require 'sidekiq/testing'
 require 'net/http'
 require_relative '../app/services/import_service'
 
@@ -11,10 +12,12 @@ class TestServer < Test::Unit::TestCase
   end
 
   def test_get_tests_success
-    import_service = ImportService.new
+    import_service = ImportService.new('test-db')
     import_service.create_table
-    import_service.insert File.read("#{Dir.pwd}/support/test_data.csv")
-    expected_response_body = JSON.parse(File.read("#{Dir.pwd}/support/test_db_data.json"))
+    CSV.foreach("#{Dir.pwd}/support/test_query_data.csv", headers: true, col_sep: ';') do |row|
+      import_service.insert row.fields
+    end
+    expected_response_body = JSON.parse(File.read("#{Dir.pwd}/support/test_query_db_data.json"))
 
     response = Net::HTTP.get_response 'localhost', '/tests', 3000
 
@@ -35,8 +38,8 @@ class TestServer < Test::Unit::TestCase
     require_relative '../app/services/query_service'
     http = Net::HTTP.new('localhost', 3000)
     request = Net::HTTP::Post.new('/import', 'Content-Type': 'text/csv')
-    request.body = File.read("#{Dir.pwd}/support/test_data.csv")
-    expected_db_data = JSON.parse(File.read("#{Dir.pwd}/support/test_db_data.json"))
+    request.body = File.read("#{Dir.pwd}/support/test_query_data.csv")
+    expected_db_data = JSON.parse(File.read("#{Dir.pwd}/support/test_query_db_data.json"))
 
     response = http.request(request)
 
@@ -49,9 +52,9 @@ class TestServer < Test::Unit::TestCase
     require_relative '../app/services/query_service'
     http = Net::HTTP.new('localhost', 3000)
     request1 = Net::HTTP::Post.new('/import', 'Content-Type': 'text/csv')
-    request1.body = File.read("#{Dir.pwd}/support/test_multiple_insert_data1.csv")
+    request1.body = File.read("#{Dir.pwd}/support/test_data1.csv")
     request2 = Net::HTTP::Post.new('/import', 'Content-Type': 'text/csv')
-    request2.body = File.read("#{Dir.pwd}/support/test_multiple_insert_data2.csv")
+    request2.body = File.read("#{Dir.pwd}/support/test_data2.csv")
     expected_db_data = JSON.parse(File.read("#{Dir.pwd}/support/test_multiple_insert_db_data.json"))
 
     http.request(request1)

@@ -11,10 +11,12 @@ class TestQuery < Test::Unit::TestCase
 
   def test_get_tests_success
     require_relative '../app/services/import_service'
-    import_service = ImportService.new
+    import_service = ImportService.new('test-db')
     import_service.create_table
-    import_service.insert File.read("#{Dir.pwd}/support/test_data.csv")
-    expected_result = JSON.parse(File.read("#{Dir.pwd}/support/test_db_data.json"))
+    CSV.foreach("#{Dir.pwd}/support/test_query_data.csv", headers: true, col_sep: ';') do |row|
+      import_service.insert row.fields
+    end
+    expected_result = JSON.parse(File.read("#{Dir.pwd}/support/test_query_db_data.json"))
 
     result = QueryService.new.get_tests
 
