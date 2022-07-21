@@ -13,7 +13,7 @@ Acompanhe o desenvolvimento na [**página do _GitHub Projects_**](https://github
 
 ## Executando o projeto
 
-1. Garante que o Docker está instalado e operacional.
+1. Garanta que o Docker está instalado e operacional.
 2. Execute os contêineres Docker:
 
     ```text
