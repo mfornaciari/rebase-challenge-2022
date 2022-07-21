@@ -17,7 +17,7 @@ Acompanhe o desenvolvimento na [**página do _GitHub Projects_**](https://github
 2. Execute os contêineres Docker:
 
     ```text
-    docker compose up -d
+    docker compose up
     ```
 
 3. Espere alguns segundos para o servidor entrar no ar.
@@ -25,7 +25,7 @@ Acompanhe o desenvolvimento na [**página do _GitHub Projects_**](https://github
 
 ### Executando testes
 
-Após colocar o servidor no ar, execute o seguinte comando no terminal:
+Após colocar o servidor no ar, execute o seguinte comando em outro terminal:
 
 ```text
 docker exec rebase-challenge-2022-tests-1 bash -c "cd ../tests && ruby run_tests.rb"
@@ -35,7 +35,7 @@ docker exec rebase-challenge-2022-tests-1 bash -c "cd ../tests && ruby run_tests
 
 ### GET /tests
 
-Acessando o endereço <localhost:3000/tests>, é possível visualizar todos os exames cadastrados no banco de dados. O servidor envia uma resposta com status HTTP 200 ("OK") como a seguinte:
+Acessando o endereço <localhost:3000/tests>, é possível visualizar todos os exames cadastrados no banco de dados. O servidor retorna uma resposta com status HTTP 200 ("OK") como a seguinte:
 
 Headers:
 
@@ -71,9 +71,84 @@ Body:
 ]
 ```
 
+Caso não haja exames cadastrados no banco de dados, o servidor retorna uma resposta com status HTTP 200 ("OK") como a seguinte:
+
+Headers:
+
+```text
+Content-Type: text/plain;charset=utf-8
+X-Content-Type-Options: nosniff
+Content-Length: 28
+```
+
+Body:
+
+```text
+Não há exames registrados.
+```
+
+### GET /tests/:token
+
+Acessando o endereço <localhost:3000/tests/:token>, onde `:token` é o _token_ identificador de um exame, é possível visualizar todos os dados relativos ao exame em questão cadastrados no banco de dados. Por exemplo: acessando <localhost:3000/tests/AIWH8Y>, procuraríamos os dados relativos ao exame identificado pelo _token_ AIWH8Y. Se um exame com esse _token_ estiver cadastrado no banco de dados, o servidor retorna uma resposta com status HTTP 200 ("OK") como a seguinte:
+
+Headers:
+
+```text
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+Content-Length: 1377
+```
+
+Body:
+
+```text
+{
+    "cpf": "071.488.453-78",
+    "nome paciente": "Antônio Rebouças",
+    "email paciente": "adalberto_grady@feil.org",
+    "data nascimento paciente": "1999-04-11",
+    "token resultado exame": "AIWH8Y",
+    "data exame": "2021-06-29",
+    "médico": {
+        "crm médico": "B0002W2RBG",
+        "crm médico estado": "SP",
+        "nome médico": "Dra. Isabelly Rêgo"
+    },
+    "exames": [
+        {
+            "tipo exame": "hemácias",
+            "limites tipo exame": "45-52",
+            "resultado tipo exame": "6"
+        },
+        {
+            "tipo exame": "vldl",
+            "limites tipo exame": "48-72",
+            "resultado tipo exame": "88"
+        },
+          ...
+    ]
+}
+```
+
+Se não houver exames cadastrados com o _token_ informado no banco de dados, o servidor retorna uma resposta com status HTTP 404 ("Not Found") como a seguinte:
+
+Headers:
+
+```text
+Content-Type: text/plain;charset=utf-8
+X-Content-Type-Options: nosniff
+Content-Length: 43
+```
+
+Body:
+
+```text
+Não há exames registrados com esse token.
+```
+
 ### POST /import
 
-Enviando uma requisição POST para localhost:3000/import, é possível adicionar novos dados ao banco. A requisição deve ser estruturada como a seguinte:
+Enviando uma requisição POST para localhost:3000/import, é possível adicionar novos dados ao banco de forma **assíncrona**. A requisição deve conter dados CSV no seu corpo e ser estruturada como a seguinte:
 
 Headers:
 
@@ -106,7 +181,7 @@ Body:
 Dados importados com sucesso.
 ```
 
-Caso receba uma requisição em formato incorreto, o servidor retorna uma resposta com status HTTP 422 ("Unprocessable Entity") como a seguinte:
+Caso receba uma requisição com dados CSV que não contêm o número adequado de colunas (16), o servidor retorna uma resposta com status HTTP 422 ("Unprocessable Entity") como a seguinte:
 
 Headers:
 
@@ -126,4 +201,8 @@ Formato dos dados incorreto.
 
 ## Importando dados manualmente
 
-Executando o script `import_from_csv.rb`, é possível substituir todos os dados atualmente no banco por aqueles definidos no arquivo `data.csv`.
+Executando o script `import_from_csv.rb`, é possível substituir, de forma **assíncrona**, todos os dados atualmente no banco por aqueles definidos no arquivo `data.csv`:
+
+```text
+docker exec rebase-challenge-2022-app-1 ruby import_from_csv.rb
+```

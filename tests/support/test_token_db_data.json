@@ -1,0 +1,25 @@
+{
+  "token resultado exame": "AIWH8Y",
+  "data exame": "2021-06-29",
+  "cpf": "071.488.453-78",
+  "nome paciente": "Antônio Rebouças",
+  "email paciente": "adalberto_grady@feil.org",
+  "data nascimento paciente": "1999-04-11",
+  "médico": {
+    "crm médico": "B0002W2RBG",
+    "crm médico estado": "SP",
+    "nome médico": "Dra. Isabelly Rêgo"
+  },
+  "exames": [
+    {
+      "tipo exame": "t4-livre",
+      "limites tipo exame": "34-60",
+      "resultado tipo exame": "59"
+    },
+    {
+      "tipo exame": "ácido úrico",
+      "limites tipo exame": "15-61",
+      "resultado tipo exame": "43"
+    }
+  ]
+}

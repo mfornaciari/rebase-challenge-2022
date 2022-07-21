@@ -44,4 +44,34 @@ class TestServer < Test::Unit::TestCase
     assert_equal '422', response.code
     assert_equal 'Formato dos dados incorreto.'.force_encoding('ascii-8bit'), response.body
   end
+
+  def test_get_tests_token_success
+    import_service = ImportService.new('test-db')
+    import_service.create_table
+    CSV.foreach("#{Dir.pwd}/support/test_token_data.csv", headers: true, col_sep: ';') do |row|
+      import_service.insert row.fields
+    end
+    expected_response_body = JSON.parse(File.read("#{Dir.pwd}/support/test_token_db_data.json"))
+
+    response = Net::HTTP.get_response 'localhost', '/tests/AIWH8Y', 3000
+
+    assert_equal '200', response.code
+    assert_equal 'application/json', response['Content-Type']
+    assert_equal expected_response_body, JSON.parse(response.body)
+  end
+
+  def get_tests_token_not_found
+    import_service = ImportService.new('test-db')
+    import_service.create_table
+    CSV.foreach("#{Dir.pwd}/support/test_token_data.csv", headers: true, col_sep: ';') do |row|
+      import_service.insert row.fields
+    end
+    expected_response_body = JSON.parse(File.read("#{Dir.pwd}/support/test_token_db_data.json"))
+
+    response = Net::HTTP.get_response 'localhost', '/tests/ABCDEF', 3000
+
+    assert_equal '404', response.code
+    assert_equal 'text/plain;charset=utf-8', response['Content-Type']
+    assert_equal 'Não há exames registrados com esse token.'.force_encoding('ascii-8bit'), response.body
+  end
 end
