@@ -28,4 +28,29 @@ class TestQuery < Test::Unit::TestCase
 
     assert_equal false, result
   end
+
+  def test_get_tests_token_success
+    import_service = ImportService.new('test-db')
+    import_service.create_table
+    CSV.foreach("#{Dir.pwd}/support/test_token_data.csv", headers: true, col_sep: ';') do |row|
+      import_service.insert row.fields
+    end
+    expected_result = JSON.parse(File.read("#{Dir.pwd}/support/test_token_db_data.json"))
+
+    result = QueryService.new.get_tests_token('AIWH8Y')
+
+    assert_equal expected_result, JSON.parse(result)
+  end
+
+  def test_get_tests_token_not_found
+    import_service = ImportService.new('test-db')
+    import_service.create_table
+    CSV.foreach("#{Dir.pwd}/support/test_token_data.csv", headers: true, col_sep: ';') do |row|
+      import_service.insert row.fields
+    end
+
+    result = QueryService.new.get_tests_token('ABCDEF')
+
+    assert_equal false, result
+  end
 end
