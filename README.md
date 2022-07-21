@@ -148,7 +148,7 @@ Não há exames registrados com esse token.
 
 ### POST /import
 
-Enviando uma requisição POST para localhost:3000/import, é possível adicionar novos dados ao banco de forma **assíncrona**. A requisição deve conter dados CSV no seu corpo e ser estruturada como a seguinte:
+Enviando uma requisição POST para <localhost:3000/import>, é possível adicionar novos dados ao banco de forma **assíncrona**. A requisição deve conter dados CSV no seu corpo e ser estruturada como a seguinte:
 
 Headers:
 
