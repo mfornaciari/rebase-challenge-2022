@@ -14,6 +14,17 @@ get '/tests' do
   'Não há exames registrados.'
 end
 
+get '/tests/:token' do
+  content = QueryService.new.get_tests_token(params[:token])
+  if content
+    content_type :json
+    return content
+  end
+
+  content_type :text
+  [404, 'Não há exames registrados com esse token.']
+end
+
 post '/import' do
   csv = CSV.new(request.body.read, headers: true, col_sep: ';')
   return [422, 'Formato dos dados incorreto.'] unless csv.first.to_a.length == 16
