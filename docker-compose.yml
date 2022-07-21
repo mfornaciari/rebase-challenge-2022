@@ -32,6 +32,8 @@ services:
 
   redis:
     image: redis
+    volumes:
+      - redis-cache:/data
 
   tests:
     image: ruby
@@ -72,3 +74,4 @@ volumes:
   test-db-data:
   bundle-cache:
   sidekiq-bundle-cache:
+  redis-cache:
